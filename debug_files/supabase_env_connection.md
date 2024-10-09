@@ -19,3 +19,10 @@ https://github.com/mckaywrigley/takeoff-cursor-course
 URL encoding for the connection string
 https://forum.codewithmosh.com/t/trouble-with-prisma-mysql-connection-string-when-using-socket-connection-method/23823/3
 https://github.com/prisma/prisma/discussions/21666#discussioncomment-8819505
+
+
+
+prepared statement \"s0\" already exists
+https://github.com/prisma/prisma/issues/11643#issuecomment-1034078942
+You need to combine the connection pooled connection string from Supabase (port 6543) with adding &pgbouncer=true to the connection string to get rid of this problem. The addition to the connection string tells Prisma that it is talking to a server running PgBouncer - which is the case for Supabase's connection pooled connection string of course.
+

@@ -1,16 +1,71 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
 generator client {
-  provider        = "prisma-client-js"
+  provider = "prisma-client-js"
   previewFeatures = ["postgresqlExtensions"]
 }
 
 datasource db {
-  provider  = "postgresql"
-  url       = env("DATABASE_URL")
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
   directUrl = env("DIRECT_URL")
 }
 
-model Domain_names_basic_info {
-  id           Int      @id @default(autoincrement())
-  name         String   @unique
-  creationDate DateTime
+model DomainName {
+  id            String   @id @default(cuid())
+  domainName    String   @unique
+  createdAt     DateTime @default(now())
+  tld           String
+  length        Int
+  processedByAgent  String
+  agentModel        String
+
+  // Add the relation field here
+  evaluation DNEvaluation? 
+  seoAnalysis DNSEOAnalysis?
+  availabilityStatus DNAvailabilityStatus?
+}
+
+model DNAvailabilityStatus {
+  id                String @id @default(cuid())
+  domainId          String @unique
+  domainName  DomainName   @relation(fields: [domainId], references: [id])
+  status            String
+  processedByAgent    String
+  agentModel        String
+  createdAt       DateTime @default(now())
+}
+
+model DNEvaluation {
+  id String @id @default(cuid())
+  domainId String @unique
+  domainName     DomainName   @relation(fields: [domainId], references: [id])
+  possibleCategories    String[]
+  possibleKeywords      String[]
+  memorabilityScore     Int
+  pronounceabilityScore Int
+  brandabilityScore     Int
+  description           String
+  overallScore          Int
+  processedByAgent        String
+  agentModel             String
+  createdAt             DateTime @default(now())
+}
+
+model DNSEOAnalysis {
+  id                       String   @id @default(cuid())
+  domainId                 String   @unique
+  domainName     DomainName   @relation(fields: [domainId], references: [id])
+  seoKeywords              String[]
+  seoKeywordRelevanceScore Int
+  industryRelevanceScore   Int
+  domainAge                Int
+  potentialResaleValue     Int
+  language                 String
+  trademarkStatus          String?
+  scoredByAgent            String
+  agentModel               String
+  description              String
+  createdAt                DateTime @default(now())
 }

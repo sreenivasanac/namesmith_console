@@ -41,7 +41,8 @@ export default async function DashboardPage({
       <Pagination
         totalItems={totalCount}
         currentPage={page}
-        pageSize={pageSize}
+        itemsPerPage={pageSize}
+        baseUrl="/dashboard"
       />
     </div>
   );

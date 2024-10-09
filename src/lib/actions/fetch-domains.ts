@@ -1,6 +1,6 @@
 'use server';
 
-import prisma from '@/lib/prisma';
+import { prisma } from '@/lib/prisma';
 
 interface FetchDomainsParams {
   page: number;
@@ -25,32 +25,40 @@ export async function fetchDomains({
   sortBy,
   sortOrder,
 }: FetchDomainsParams) {
-  const skip = (page - 1) * pageSize;
+  try {
+    const skip = (page - 1) * pageSize;
 
-  const where = {
-    ...(search && {
-      OR: [
-        { name: { contains: search, mode: 'insensitive' } },
-        { tld: { contains: search, mode: 'insensitive' } },
-        { possibleCategories: { has: search } },
-        { possibleKeywords: { has: search } },
-      ],
-    }),
-    ...(status && { availabilityStatus: status }),
-    ...(tld && { tld }),
-    ...(bot && { generatedByBot: bot }),
-    ...(industry && { possibleCategories: { has: industry } }),
-  };
+    const where = {
+      ...(search && {
+        OR: [
+          { domainName: { contains: search, mode: 'insensitive' } },
+          { tld: { contains: search, mode: 'insensitive' } },
+        ],
+      }),
+      ...(status && { availabilityStatus: { status } }),
+      ...(tld && { tld }),
+      ...(bot && { processedByAgent: bot }),
+      ...(industry && { evaluation: { possibleCategories: { has: industry } } }),
+    };
 
-  const [domains, totalCount] = await Promise.all([
-    prisma.domain.findMany({
-      where,
-      skip,
-      take: pageSize,
-      orderBy: sortBy ? { [sortBy]: sortOrder || 'asc' } : undefined,
-    }),
-    prisma.domain.count({ where }),
-  ]);
+    const [domains, totalCount] = await Promise.all([
+      prisma.domainName.findMany({
+        where,
+        skip,
+        take: pageSize,
+        orderBy: sortBy ? { [sortBy]: sortOrder || 'asc' } : undefined,
+        include: {
+          availabilityStatus: true,
+          evaluation: true,
+          seoAnalysis: true,
+        },
+      }),
+      prisma.domainName.count({ where }),
+    ]);
 
-  return { domains, totalCount };
+    return { domains, totalCount };
+  } catch (error) {
+    console.error('Error in fetchDomains:', error);
+    throw error;
+  }
 }

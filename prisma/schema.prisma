@@ -69,3 +69,14 @@ model DNSEOAnalysis {
   description              String
   createdAt                DateTime @default(now())
 }
+
+model Domain {
+  id        String   @id @default(cuid())
+  name      String   @unique
+  status    String
+  tld       String
+  bot       String?
+  industry  String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}

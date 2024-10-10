@@ -8,7 +8,6 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import { Button } from '@/components/ui/button';
-import Link from 'next/link';
 
 type DomainWithRelations = DomainName & {
   availabilityStatus: DNAvailabilityStatus | null;
@@ -20,7 +19,7 @@ interface DomainTableProps {
   domains: DomainWithRelations[];
 }
 
-export default function DomainTable({ domains }: DomainTableProps) {
+export function DomainTable({ domains }: DomainTableProps) {
   return (
     <Table>
       <TableHeader>
@@ -41,7 +40,7 @@ export default function DomainTable({ domains }: DomainTableProps) {
                 More Info
               </Button>
             </TableCell>
-            <TableCell>{domain.availabilityStatus?.status || 'N/A'}</TableCell>
+            <TableCell>{domain.availabilityStatus?.status ?? 'N/A'}</TableCell>
             <TableCell>
               <Button
                 variant="outline"

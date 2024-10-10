@@ -1,6 +1,7 @@
 'use server';
 
 import { prisma } from '@/lib/prisma';
+import { Prisma } from '@prisma/client';
 
 interface FetchDomainsParams {
   page: number;
@@ -25,22 +26,21 @@ export async function fetchDomains({
   sortBy,
   sortOrder,
 }: FetchDomainsParams) {
+  const skip = (page - 1) * pageSize;
+  const where: Prisma.DomainNameWhereInput = {
+    ...(search && {
+      OR: [
+        { domainName: { contains: search, mode: 'insensitive' } },
+        { tld: { contains: search, mode: 'insensitive' } },
+      ],
+    }),
+    ...(status && { availabilityStatus: { status } }),
+    ...(tld && { tld }),
+    ...(bot && { processedByAgent: bot }),
+    ...(industry && { evaluation: { possibleCategories: { has: industry } } }),
+  };
+
   try {
-    const skip = (page - 1) * pageSize;
-
-    const where = {
-      ...(search && {
-        OR: [
-          { domainName: { contains: search, mode: 'insensitive' } },
-          { tld: { contains: search, mode: 'insensitive' } },
-        ],
-      }),
-      ...(status && { availabilityStatus: { status } }),
-      ...(tld && { tld }),
-      ...(bot && { processedByAgent: bot }),
-      ...(industry && { evaluation: { possibleCategories: { has: industry } } }),
-    };
-
     const [domains, totalCount] = await Promise.all([
       prisma.domainName.findMany({
         where,

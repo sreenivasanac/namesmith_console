@@ -15,11 +15,11 @@ export function Pagination({ totalItems, currentPage, itemsPerPage, baseUrl }: P
   const router = useRouter();
   const totalPages = Math.ceil(totalItems / itemsPerPage);
 
-  const handlePageChange = (newPage: number) => {
+  function handlePageChange(newPage: number) {
     const url = new URL(baseUrl, window.location.origin);
     url.searchParams.set('page', newPage.toString());
     router.push(url.toString());
-  };
+  }
 
   return (
     <nav className="flex justify-center space-x-2 mt-4">

@@ -11,17 +11,28 @@ interface FilterState {
   resetFilters: () => void
 }
 
-const initialState = {
-  search: '',
-  status: [] as string[],
-  tld: [] as string[],
-  bot: [] as string[],
-  industry: [] as string[],
-}
+// const initialState = {
+//   search: '',
+//   status: [] as string[],
+//   tld: [] as string[],
+//   bot: [] as string[],
+//   industry: [] as string[],
+// }
 
 export const useFilterStore = create<FilterState>((set) => ({
-  ...initialState,
+//   ...initialState,
+  search: '',
+  status: [],
+  tld: [],
+  bot: [],
+  industry: [],
   setSearch: (search) => set({ search }),
   setFilter: (key, value) => set((state) => ({ ...state, [key]: value })),
-  resetFilters: () => set(initialState),
+  resetFilters: () => set({
+    search: '',
+    status: [],
+    tld: [],
+    bot: [],
+    industry: [],
+  }),
 }))

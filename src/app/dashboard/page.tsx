@@ -39,16 +39,22 @@ export default async function DashboardPage({
   return (
     <div className="container mx-auto py-10">
       <h1 className="text-3xl font-bold mb-6">Domain Dashboard</h1>
-      <Filters />
-      <Suspense fallback={<div>Loading...</div>}>
-        <DomainTable domains={domains} />
-      </Suspense>
-      <Pagination
-        totalItems={totalCount}
-        currentPage={page}
-        itemsPerPage={pageSize}
-        baseUrl="/dashboard"
-      />
+      <div className="flex">
+        <div className="w-1/4 pr-4">
+          <Filters />
+        </div>
+        <div className="w-3/4">
+          <Suspense fallback={<div>Loading...</div>}>
+            <DomainTable domains={domains} />
+          </Suspense>
+          <Pagination
+            totalItems={totalCount}
+            currentPage={page}
+            itemsPerPage={pageSize}
+            baseUrl="/dashboard"
+          />
+        </div>
+      </div>
     </div>
   );
 }

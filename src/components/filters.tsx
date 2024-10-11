@@ -3,22 +3,8 @@
 import { useFilterStore } from '@/store/filterStore'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
-import {
-  Command,
-  CommandEmpty,
-  CommandGroup,
-  CommandInput,
-  CommandItem,
-  CommandList,
-} from "@/components/ui/command"
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover"
-import { useState, useCallback, useMemo } from 'react'
-import { Check, ChevronsUpDown } from "lucide-react"
-import { cn } from "@/lib/utils"
+import { Checkbox } from '@/components/ui/checkbox'
+import { useCallback } from 'react'
 import { useRouter } from 'next/navigation'
 
 interface Option {
@@ -51,75 +37,37 @@ const filterOptions: Record<string, Option[]> = {
   ],
 }
 
-function MultiSelect({ filterKey, placeholder }: { filterKey: string, placeholder: string }) {
-  const {
-    [filterKey]: selectedValues,
-    setFilter,
-  } = useFilterStore()
+function FilterSection({ title, options, filterKey }: { title: string, options: Option[], filterKey: 'status' | 'tld' | 'bot' | 'industry' }) {
+  const { [filterKey]: selectedValues, setFilter } = useFilterStore()
 
-  const [open, setOpen] = useState(false)
-  const [searchValue, setSearchValue] = useState('')
-
-  const filteredOptions: Array<{ value: string, label: string }> = useMemo(() =>
-    (filterOptions[filterKey] || []).filter(option =>
-      option.label.toLowerCase().includes(searchValue.toLowerCase())
-    ), [filterKey, searchValue]
-  )
-
-  const handleSelect = useCallback((optionValue: string) => {
-    setFilter(filterKey,
-      (selectedValues || []).includes(optionValue)
-        ? (selectedValues || []).filter(value => value !== optionValue)
-        : [...(selectedValues || []), optionValue]
-    )
-  }, [filterKey, selectedValues, setFilter])
-
-  const selectedCount = Array.isArray(selectedValues) ? selectedValues.length : 0
+  const handleCheckboxChange = (value: string) => {
+    const newValues = selectedValues?.includes(value)
+      ? selectedValues.filter(v => v !== value)
+      : [...(selectedValues || []), value]
+    setFilter(filterKey, newValues)
+  }
 
   return (
-    <Popover open={open} onOpenChange={setOpen}>
-      <PopoverTrigger asChild>
-        <Button
-          variant="outline"
-          role="combobox"
-          aria-expanded={open}
-          className="w-[200px] justify-between"
-        >
-          {selectedCount > 0
-            ? `${selectedCount} selected`
-            : placeholder}
-          <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-        </Button>
-      </PopoverTrigger>
-      <PopoverContent className="w-[200px] p-0">
-        <Command>
-          <CommandInput
-            placeholder={`Search ${placeholder.toLowerCase()}...`}
-            value={searchValue}
-            onValueChange={setSearchValue}
-          />
-          <CommandEmpty>No {placeholder.toLowerCase()} found.</CommandEmpty>
-          <CommandGroup>
-            <CommandList>
-              {filteredOptions.length > 0 ? filteredOptions.map((option) => (
-                <CommandItem
-                  key={option.value}
-                  onSelect={() => handleSelect(option.value)}
-                >
-                  <Check
-                    className={cn(
-                      "mr-2 h-4 w-4",
-                      Array.isArray(selectedValues) && selectedValues.includes(option.value) ? "opacity-100" : "opacity-0"
-                    )}
-                  />
-                  {option.label}
-                </CommandItem>
-              )) : <CommandItem>No options available</CommandItem>}
-            </CommandList>
-          </CommandGroup>
-        </Command>
-      </PopoverContent>
-    </Popover>
+    <div className="mb-4">
+      <h3 className="text-sm font-semibold mb-2">{title}</h3>
+      <div className="space-y-2">
+        {options.map((option) => (
+          <div key={option.value} className="flex items-center">
+            <Checkbox
+              id={`${filterKey}-${option.value}`}
+              checked={selectedValues?.includes(option.value)}
+              onCheckedChange={() => handleCheckboxChange(option.value)}
+            />
+            <label
+              htmlFor={`${filterKey}-${option.value}`}
+              className="ml-2 text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+            >
+              {option.label}
+            </label>
+          </div>
+        ))}
+      </div>
+    </div>
   )
 }
 
@@ -147,21 +95,21 @@ export default function Filters() {
   }, [resetFilters, router])
 
   return (
-    <div className="flex flex-wrap gap-4 mb-6">
+    <div className="w-64 p-4 border-r">
       <Input
         placeholder="Search domains"
-        className="max-w-sm"
+        className="mb-4"
         value={search}
         onChange={(e) => setSearch(e.target.value)}
       />
 
-      <MultiSelect filterKey="status" placeholder="Select status" />
-      <MultiSelect filterKey="tld" placeholder="Select TLDs" />
-      <MultiSelect filterKey="bot" placeholder="Select Bots" />
-      <MultiSelect filterKey="industry" placeholder="Select Industries" />
+      <FilterSection title="Status" options={filterOptions.status} filterKey="status" />
+      <FilterSection title="TLDs" options={filterOptions.tld} filterKey="tld" />
+      <FilterSection title="Bots" options={filterOptions.bot} filterKey="bot" />
+      <FilterSection title="Industries" options={filterOptions.industry} filterKey="industry" />
 
-      <Button onClick={applyFilters}>Apply Filters</Button>
-      <Button variant="outline" onClick={handleResetFilters}>Reset Filters</Button>
+      <Button onClick={applyFilters} className="w-full mb-2">Apply Filters</Button>
+      <Button variant="outline" onClick={handleResetFilters} className="w-full">Reset Filters</Button>
     </div>
   )
 }

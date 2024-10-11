@@ -4,8 +4,6 @@ import { prisma } from '@/lib/prisma';
 import { Prisma } from '@prisma/client';
 
 interface FetchDomainsParams {
-  page: number;
-  pageSize: number;
   search?: string;
   status?: string;
   tld?: string;
@@ -16,8 +14,6 @@ interface FetchDomainsParams {
 }
 
 export async function fetchDomains({
-  page,
-  pageSize,
   search,
   status,
   tld,
@@ -26,37 +22,40 @@ export async function fetchDomains({
   sortBy,
   sortOrder,
 }: FetchDomainsParams) {
-  const skip = (page - 1) * pageSize;
-  const where: Prisma.DomainNameWhereInput = {
-    ...(search && {
-      OR: [
-        { domainName: { contains: search, mode: 'insensitive' } },
-        { tld: { contains: search, mode: 'insensitive' } },
-      ],
-    }),
-    ...(status && { availabilityStatus: { status } }),
-    ...(tld && { tld }),
-    ...(bot && { processedByAgent: bot }),
-    ...(industry && { evaluation: { possibleCategories: { has: industry } } }),
-  };
-
   try {
-    const [domains, totalCount] = await Promise.all([
-      prisma.domainName.findMany({
-        where,
-        skip,
-        take: pageSize,
-        orderBy: sortBy ? { [sortBy]: sortOrder || 'asc' } : undefined,
-        include: {
-          availabilityStatus: true,
-          evaluation: true,
-          seoAnalysis: true,
-        },
-      }),
-      prisma.domainName.count({ where }),
-    ]);
+    const where: Prisma.DomainNameWhereInput = {};
+    if (search) {
+      where.domainName = { contains: search, mode: 'insensitive' };
+    }
+    if (status) {
+      where.availabilityStatus = { status: { in: status.split(',') } };
+    }
+    if (tld) {
+      where.tld = { in: tld.split(',') };
+    }
+    if (bot) {
+      where.processedByAgent = { in: bot.split(',') };
+    }
+    if (industry) {
+      where.evaluation = { possibleCategories: { hasSome: industry.split(',') } };
+    }
 
-    return { domains: domains ?? [], totalCount };
+    const orderBy: Prisma.DomainNameOrderByWithRelationInput = {};
+    if (sortBy) {
+      orderBy[sortBy as keyof Prisma.DomainNameOrderByWithRelationInput] = sortOrder || 'asc';
+    }
+
+    const domains = await prisma.domainName.findMany({
+      where,
+      orderBy,
+      include: {
+        availabilityStatus: true,
+        evaluation: true,
+        seoAnalysis: true,
+      },
+    });
+
+    return { domains };
   } catch (error) {
     console.error('Error in fetchDomains:', error);
     throw error;

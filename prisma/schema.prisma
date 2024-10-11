@@ -69,3 +69,8 @@ model DNSEOAnalysis {
   description              String
   createdAt                DateTime @default(now())
 }
+
+enum QueryMode {
+  default
+  insensitive
+}

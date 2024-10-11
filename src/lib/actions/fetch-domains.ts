@@ -1,6 +1,7 @@
 'use server';
 
-import prisma from '@/lib/prisma';
+import { prisma } from '@/lib/prisma';
+import { Prisma } from '@prisma/client';
 
 interface FetchDomainsParams {
   page: number;
@@ -26,31 +27,38 @@ export async function fetchDomains({
   sortOrder,
 }: FetchDomainsParams) {
   const skip = (page - 1) * pageSize;
-
-  const where = {
+  const where: Prisma.DomainNameWhereInput = {
     ...(search && {
       OR: [
-        { name: { contains: search, mode: 'insensitive' } },
+        { domainName: { contains: search, mode: 'insensitive' } },
         { tld: { contains: search, mode: 'insensitive' } },
-        { possibleCategories: { has: search } },
-        { possibleKeywords: { has: search } },
       ],
     }),
-    ...(status && { availabilityStatus: status }),
+    ...(status && { availabilityStatus: { status } }),
     ...(tld && { tld }),
-    ...(bot && { generatedByBot: bot }),
-    ...(industry && { possibleCategories: { has: industry } }),
+    ...(bot && { processedByAgent: bot }),
+    ...(industry && { evaluation: { possibleCategories: { has: industry } } }),
   };
 
-  const [domains, totalCount] = await Promise.all([
-    prisma.domain.findMany({
-      where,
-      skip,
-      take: pageSize,
-      orderBy: sortBy ? { [sortBy]: sortOrder || 'asc' } : undefined,
-    }),
-    prisma.domain.count({ where }),
-  ]);
+  try {
+    const [domains, totalCount] = await Promise.all([
+      prisma.domainName.findMany({
+        where,
+        skip,
+        take: pageSize,
+        orderBy: sortBy ? { [sortBy]: sortOrder || 'asc' } : undefined,
+        include: {
+          availabilityStatus: true,
+          evaluation: true,
+          seoAnalysis: true,
+        },
+      }),
+      prisma.domainName.count({ where }),
+    ]);
 
-  return { domains, totalCount };
+    return { domains: domains ?? [], totalCount };
+  } catch (error) {
+    console.error('Error in fetchDomains:', error);
+    throw error;
+  }
 }

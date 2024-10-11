@@ -54,6 +54,7 @@ UI and Styling
 - Use Shadcn UI, and Tailwind for components and styling.
 - Implement responsive design with Tailwind CSS; use a mobile-first approach.
 - do not use Radix UI directly, use the shadcn UI components that wrap them.
+- Try to avoid importing new components like tanstack components, instead try your best to use shadcn UI components only. If it is not all possible, then use the radix UI components directly.
 
 State Management
 - Use Zustand for global state management.

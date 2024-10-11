@@ -4,8 +4,9 @@ import { useFilterStore } from '@/store/filterStore'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { Checkbox } from '@/components/ui/checkbox'
-import { useCallback } from 'react'
-import { useRouter } from 'next/navigation'
+import { Label } from '@/components/ui/label'
+import { useCallback, useEffect } from 'react'
+import { useRouter, useSearchParams } from 'next/navigation'
 
 interface Option {
   label: string
@@ -58,12 +59,12 @@ function FilterSection({ title, options, filterKey }: { title: string, options: 
               checked={selectedValues?.includes(option.value)}
               onCheckedChange={() => handleCheckboxChange(option.value)}
             />
-            <label
+            <Label
               htmlFor={`${filterKey}-${option.value}`}
               className="ml-2 text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
             >
               {option.label}
-            </label>
+            </Label>
           </div>
         ))}
       </div>
@@ -73,10 +74,28 @@ function FilterSection({ title, options, filterKey }: { title: string, options: 
 
 export default function Filters() {
   const router = useRouter()
-  const { search, setSearch, resetFilters } = useFilterStore()
+  const searchParams = useSearchParams()
+  const { search, setSearch, resetFilters, status, tld, bot, industry } = useFilterStore()
+
+  useEffect(() => {
+    // Initialize filters from URL on component mount
+    const urlSearch = searchParams.get('search') || ''
+    const urlStatus = searchParams.get('status')?.split(',') || []
+    const urlTld = searchParams.get('tld')?.split(',') || []
+    const urlBot = searchParams.get('bot')?.split(',') || []
+    const urlIndustry = searchParams.get('industry')?.split(',') || []
+
+    setSearch(urlSearch)
+    useFilterStore.setState({
+      status: urlStatus,
+      tld: urlTld,
+      bot: urlBot,
+      industry: urlIndustry,
+    })
+  }, [])
 
   const applyFilters = useCallback(() => {
-    const filters = useFilterStore.getState()
+    const filters = { search, status, tld, bot, industry }
     const searchParams = new URLSearchParams()
 
     if (filters.search) searchParams.set('search', filters.search)
@@ -87,7 +106,7 @@ export default function Filters() {
     })
 
     router.push(`/dashboard?${searchParams.toString()}`)
-  }, [router])
+  }, [router, search, status, tld, bot, industry])
 
   const handleResetFilters = useCallback(() => {
     resetFilters()
@@ -109,7 +128,7 @@ export default function Filters() {
       <FilterSection title="Industries" options={filterOptions.industry} filterKey="industry" />
 
       <Button onClick={applyFilters} className="w-full mb-2">Apply Filters</Button>
-      <Button variant="outline" onClick={handleResetFilters} className="w-full">Reset Filters</Button>
+      <Button onClick={handleResetFilters} className="w-full" variant="outline">Reset Filters</Button>
     </div>
   )
 }

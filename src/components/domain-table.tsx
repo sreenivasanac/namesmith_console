@@ -122,9 +122,13 @@ export function DomainTable({ domains }: DomainTableProps) {
       result.sort((a, b) => {
         const aValue = a[sortColumn];
         const bValue = b[sortColumn];
-        if (aValue === undefined || bValue === undefined) return 0;
-        if (aValue < bValue) return sortDirection === 'asc' ? -1 : 1;
-        if (aValue > bValue) return sortDirection === 'asc' ? 1 : -1;
+        if (aValue === undefined || bValue === undefined || aValue === null || bValue === null) return 0;
+        if (typeof aValue === 'string' && typeof bValue === 'string') {
+          return sortDirection === 'asc' ? aValue.localeCompare(bValue) : bValue.localeCompare(aValue);
+        }
+        if (typeof aValue === 'number' && typeof bValue === 'number') {
+          return sortDirection === 'asc' ? aValue - bValue : bValue - aValue;
+        }
         return 0;
       });
     }

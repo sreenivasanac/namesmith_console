@@ -23,6 +23,8 @@ const Command = React.forwardRef<
 ))
 Command.displayName = CommandPrimitive.displayName
 
+// This empty interface is used to allow for future expansion without breaking changes
+// eslint-disable-next-line @typescript-eslint/no-empty-interface
 interface CommandDialogProps extends DialogProps {}
 
 const CommandDialog = ({ children, ...props }: CommandDialogProps) => {

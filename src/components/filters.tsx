@@ -8,7 +8,7 @@ import { Label } from '@/components/ui/label'
 import { Slider } from '@/components/ui/slider'
 import { useCallback, useEffect, useState } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
-import { Filters, RangeFilter } from '@/types/domain'
+import type { Filters } from '@/types/domain'
 
 interface Option {
   label: string
@@ -73,6 +73,16 @@ function RangeFilterSection({ title, filterKey }: { title: string, filterKey: ke
     setFilter(filterKey, { min: values[0], max: values[1] })
   }
 
+  // Helper function to safely get the min and max values
+  const getMinMax = (range: unknown): [number, number] => {
+    if (typeof range === 'object' && range !== null && 'min' in range && 'max' in range) {
+      return [range.min as number, range.max as number]
+    }
+    return [1, 10] // Default values
+  }
+
+  const [minValue, maxValue] = getMinMax(range)
+
   return (
     <div className="mb-4">
       <h3 className="text-sm font-semibold mb-2">{title}</h3>
@@ -80,12 +90,12 @@ function RangeFilterSection({ title, filterKey }: { title: string, filterKey: ke
         min={1}
         max={10}
         step={1}
-        value={[range?.min ?? 1, range?.max ?? 10]}
+        value={[minValue, maxValue]}
         onValueChange={handleRangeChange}
       />
       <div className="flex justify-between mt-2">
-        <span>{range?.min ?? 1}</span>
-        <span>{range?.max ?? 10}</span>
+        <span>{minValue}</span>
+        <span>{maxValue}</span>
       </div>
     </div>
   )
@@ -137,7 +147,7 @@ export default function Filters() {
       bot: urlBot,
       industry: urlIndustry,
     })
-  }, [])
+  }, [searchParams, setSearch])
 
   const applyFilters = useCallback(() => {
     const searchParams = new URLSearchParams()

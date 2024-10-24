@@ -23,6 +23,7 @@ import {
 import { useSearchParams } from 'next/navigation'
 import { DomainDetailsSheet } from "@/components/domain-details-sheet"
 import { DomainWithDetails } from "@/types/domain"
+import { Filters, DNEvaluation } from "@/types/domain"
 
 interface DomainTableProps {
   domains: DomainWithDetails[]
@@ -86,6 +87,26 @@ export function DomainTable({ domains }: DomainTableProps) {
         return domain.evaluation?.possibleCategories.some(category => urlIndustry.includes(category))
       })
     }
+
+    // Apply range filters
+    const rangeFilters: (keyof Filters)[] = ['memorabilityScore', 'pronounceabilityScore', 'brandabilityScore', 'overallScore', 'seoKeywordRelevanceScore']
+    rangeFilters.forEach(filterKey => {
+      const minParam = searchParams.get(`${filterKey}Min`)
+      const maxParam = searchParams.get(`${filterKey}Max`)
+      if (minParam && maxParam) {
+        const min = parseInt(minParam, 10)
+        const max = parseInt(maxParam, 10)
+        result = result.filter(domain => {
+          let score: number | undefined
+          if (filterKey === 'seoKeywordRelevanceScore') {
+            score = domain.seoAnalysis?.seoKeywordRelevanceScore
+          } else {
+            score = domain.evaluation?.[filterKey as keyof DNEvaluation] as number | undefined
+          }
+          return score !== undefined && score >= min && score <= max
+        })
+      }
+    })
 
     // Apply table search
     if (searchTerm) {
@@ -158,7 +179,7 @@ export function DomainTable({ domains }: DomainTableProps) {
                   <CaretSortIcon className="ml-2 h-4 w-4" />
                 </Button>
               </TableHead>
-              <TableHead>Status</TableHead>
+              <TableHead>Domain name Availability Status</TableHead>
               <TableHead>Actions</TableHead>
             </TableRow>
           </TableHeader>
@@ -169,7 +190,11 @@ export function DomainTable({ domains }: DomainTableProps) {
                 <TableCell>{domain.tld}</TableCell>
                 <TableCell>{domain.length}</TableCell>
                 <TableCell>{domain.processedByAgent}</TableCell>
-                <TableCell>{domain.availabilityStatus?.status || 'N/A'}</TableCell>
+                <TableCell>
+                  {domain.availabilityStatus?.status === "Available" ? "Available ✅" :
+                   domain.availabilityStatus?.status === "Registered" ? "Not available ❌" :
+                   domain.availabilityStatus?.status || 'N/A'}
+                </TableCell>
                 <TableCell>
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>

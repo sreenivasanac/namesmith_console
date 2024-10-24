@@ -1,5 +1,19 @@
 import { NextResponse } from 'next/server'
-import { prisma } from '@/lib/prisma'
+import { PrismaClient } from '@prisma/client'
+
+// Declare a variable to hold the Prisma instance
+let prisma: PrismaClient
+
+// Check if we're running in production
+if (process.env.NODE_ENV === 'production') {
+  prisma = new PrismaClient()
+} else {
+  // In development, use a global variable to prevent multiple instances
+  if (!(global as unknown as { prisma?: PrismaClient }).prisma) {
+    (global as unknown as { prisma?: PrismaClient }).prisma = new PrismaClient()
+  }
+  prisma = (global as unknown as { prisma: PrismaClient }).prisma
+}
 
 export async function GET() {
   try {
@@ -13,6 +27,6 @@ export async function GET() {
     return NextResponse.json(domains)
   } catch (error) {
     console.error('Error fetching domains:', error)
-    return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 })
+    return NextResponse.json({ error: 'Internal Server Error', details: error instanceof Error ? error.message : String(error) }, { status: 500 })
   }
 }

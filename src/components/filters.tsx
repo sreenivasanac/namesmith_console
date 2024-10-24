@@ -5,7 +5,7 @@ import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Label } from '@/components/ui/label'
-import { useCallback, useEffect } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 
 interface Option {
@@ -13,29 +13,11 @@ interface Option {
   value: string
 }
 
-const filterOptions: Record<string, Option[]> = {
-  status: [
-    { label: "Available", value: "available" },
-    { label: "Reserved", value: "reserved" },
-    { label: "Sold", value: "sold" },
-    { label: "Auction", value: "auction" },
-    { label: "Premium", value: "premium" },
-  ],
-  tld: [
-    { label: ".com", value: "com" },
-    { label: ".net", value: "net" },
-    { label: ".org", value: "org" },
-  ],
-  bot: [
-    { label: "Bot 1", value: "bot1" },
-    { label: "Bot 2", value: "bot2" },
-    { label: "Bot 3", value: "bot3" },
-  ],
-  industry: [
-    { label: "Tech", value: "tech" },
-    { label: "Finance", value: "finance" },
-    { label: "Health", value: "health" },
-  ],
+interface FilterOptions {
+  status: Option[]
+  tld: Option[]
+  bot: Option[]
+  industry: Option[]
 }
 
 function FilterSection({ title, options, filterKey }: { title: string, options: Option[], filterKey: 'status' | 'tld' | 'bot' | 'industry' }) {
@@ -76,6 +58,32 @@ export default function Filters() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const { search, setSearch, resetFilters, status, tld, bot, industry } = useFilterStore()
+  const [filterOptions, setFilterOptions] = useState<FilterOptions>({
+    status: [],
+    tld: [],
+    bot: [],
+    industry: [],
+  })
+
+  useEffect(() => {
+    // Fetch filter options from the API
+    const fetchFilterOptions = async () => {
+      try {
+        const response = await fetch('/api/filters')
+        const data = await response.json()
+        setFilterOptions({
+          status: data.statuses.map((s: string) => ({ label: s, value: s })),
+          tld: data.tlds.map((t: string) => ({ label: t, value: t })),
+          bot: data.bots.map((b: string) => ({ label: b, value: b })),
+          industry: data.industries.map((i: string) => ({ label: i, value: i })),
+        })
+      } catch (error) {
+        console.error('Failed to fetch filter options:', error)
+      }
+    }
+
+    fetchFilterOptions()
+  }, [])
 
   useEffect(() => {
     // Initialize filters from URL on component mount

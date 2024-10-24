@@ -20,19 +20,20 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
-import { useFilterStore } from "@/store/filterStore"
-import { DomainName } from "@prisma/client"
 import { useSearchParams } from 'next/navigation'
+import { DomainDetailsSheet } from "@/components/domain-details-sheet"
+import { DomainWithDetails } from "@/types/domain"
 
 interface DomainTableProps {
-  domains: DomainName[]
+  domains: DomainWithDetails[]
 }
 
 export function DomainTable({ domains }: DomainTableProps) {
-  const [sortColumn, setSortColumn] = React.useState<keyof DomainName | null>(null)
+  const [sortColumn, setSortColumn] = React.useState<keyof DomainWithDetails | null>(null)
   const [sortDirection, setSortDirection] = React.useState<'asc' | 'desc'>('asc')
   const [searchTerm, setSearchTerm] = React.useState("")
   const searchParams = useSearchParams()
+  const [selectedDomain, setSelectedDomain] = React.useState<DomainWithDetails | null>(null)
 
   const filteredDomains = React.useMemo(() => {
     let result = [...domains]
@@ -45,27 +46,51 @@ export function DomainTable({ domains }: DomainTableProps) {
     const urlIndustry = searchParams.get('industry')?.split(',')
 
     if (urlSearch) {
-      result = result.filter(domain =>
-        domain.domainName.toLowerCase().includes(urlSearch.toLowerCase())
-      )
+      console.log('urlSearch')
+      console.log(urlSearch)
+      result = result.filter(domain => {
+        const lowerDomainName = domain.domainName.toLowerCase()
+        console.log(`Domain: ${domain.domainName}, Lowercase:`, lowerDomainName)
+        return lowerDomainName.includes(urlSearch.toLowerCase())
+      })
     }
     if (urlStatus) {
-      result = result.filter(domain => urlStatus.includes(domain.availabilityStatus?.status || ''))
+      console.log('urlStatus')
+      console.log(urlStatus)
+      result = result.filter(domain => {
+        console.log(`Domain: ${domain.domainName}, Status:`, domain.availabilityStatus?.status)
+        return urlStatus.includes(domain.availabilityStatus?.status || '')
+      })
     }
     if (urlTld) {
-      result = result.filter(domain => urlTld.includes(domain.tld))
+      console.log('urlTld')
+      console.log(urlTld)
+      result = result.filter(domain => {
+        console.log(`Domain: ${domain.domainName}, TLD:`, domain.tld)
+        return urlTld.includes(domain.tld)
+      })
     }
     if (urlBot) {
-      result = result.filter(domain => urlBot.includes(domain.processedByAgent))
+      console.log('urlBot')
+      console.log(urlBot)
+      result = result.filter(domain => {
+        console.log(`Domain: ${domain.domainName}, ProcessedByAgent:`, domain.processedByAgent)
+        return urlBot.includes(domain.processedByAgent)
+      })
     }
     if (urlIndustry) {
-      result = result.filter(domain =>
-        domain.evaluation?.possibleCategories.some(category => urlIndustry.includes(category))
-      )
+      console.log('urlIndustry')
+      console.log(urlIndustry)
+      result = result.filter(domain => {
+        console.log(`Domain: ${domain.domainName}, Categories:`, domain.evaluation?.possibleCategories)
+        return domain.evaluation?.possibleCategories.some(category => urlIndustry.includes(category))
+      })
     }
 
     // Apply table search
     if (searchTerm) {
+      console.log('searchTerm')
+      console.log(searchTerm)
       result = result.filter(domain => 
         domain.domainName.toLowerCase().includes(searchTerm.toLowerCase())
       )
@@ -74,16 +99,19 @@ export function DomainTable({ domains }: DomainTableProps) {
     // Apply sorting
     if (sortColumn) {
       result.sort((a, b) => {
-        if (a[sortColumn] < b[sortColumn]) return sortDirection === 'asc' ? -1 : 1
-        if (a[sortColumn] > b[sortColumn]) return sortDirection === 'asc' ? 1 : -1
-        return 0
-      })
+        const aValue = a[sortColumn];
+        const bValue = b[sortColumn];
+        if (aValue === undefined || bValue === undefined) return 0;
+        if (aValue < bValue) return sortDirection === 'asc' ? -1 : 1;
+        if (aValue > bValue) return sortDirection === 'asc' ? 1 : -1;
+        return 0;
+      });
     }
 
-    return result
-  }, [domains, searchParams, searchTerm, sortColumn, sortDirection])
+    return result;
+  }, [domains, searchParams, searchTerm, sortColumn, sortDirection]);
 
-  const handleSort = (column: keyof DomainName) => {
+  const handleSort = (column: keyof DomainWithDetails) => {
     if (sortColumn === column) {
       setSortDirection(sortDirection === 'asc' ? 'desc' : 'asc')
     } else {
@@ -130,6 +158,7 @@ export function DomainTable({ domains }: DomainTableProps) {
                   <CaretSortIcon className="ml-2 h-4 w-4" />
                 </Button>
               </TableHead>
+              <TableHead>Status</TableHead>
               <TableHead>Actions</TableHead>
             </TableRow>
           </TableHeader>
@@ -140,6 +169,7 @@ export function DomainTable({ domains }: DomainTableProps) {
                 <TableCell>{domain.tld}</TableCell>
                 <TableCell>{domain.length}</TableCell>
                 <TableCell>{domain.processedByAgent}</TableCell>
+                <TableCell>{domain.availabilityStatus?.status || 'N/A'}</TableCell>
                 <TableCell>
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
@@ -154,7 +184,9 @@ export function DomainTable({ domains }: DomainTableProps) {
                         Copy domain name
                       </DropdownMenuItem>
                       <DropdownMenuSeparator />
-                      <DropdownMenuItem>View details</DropdownMenuItem>
+                      <DropdownMenuItem onClick={() => setSelectedDomain(domain)}>
+                        View details
+                      </DropdownMenuItem>
                       <DropdownMenuItem>Edit</DropdownMenuItem>
                     </DropdownMenuContent>
                   </DropdownMenu>
@@ -164,6 +196,12 @@ export function DomainTable({ domains }: DomainTableProps) {
           </TableBody>
         </Table>
       </div>
+      {selectedDomain && (
+        <DomainDetailsSheet
+          domain={selectedDomain}
+          onClose={() => setSelectedDomain(null)}
+        />
+      )}
     </div>
   )
 }

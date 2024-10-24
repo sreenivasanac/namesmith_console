@@ -69,31 +69,27 @@ Tech stack: NextJS 14, shadcn, Tailwind, Supabase, Lucide icons.
     - description
     Tech stack: NextJS 14, shadcn, Tailwind, Supabase, Lucide icons.
 
-#### Functionality 1.2: Table in database with detailed information of the domain name
-A detailed information table with the following columns, linked to the basic table via foreign key relationships:
-    - Domain Name
-    - Domain Length (number)
-    - TLD (Top-Level Domain) (string)
-    - Possible Categories (array of strings)
-    - Possible Keywords (array of strings)
-    - Memorability Score (number)
-    - Pronounceability Score (number)
-    - Brandability Score (number)
-    - SEO/Keyword Relevance Score (number)
-    - Industry Relevance Score (number)
-    - Domain Availability Status (string)
-    - Domain age (if applicable)
-    - Potential Resale Value (number)
-    - Language/Localization ( The primary language or regional market the domain might be suited for (eg., English, Spanish, global)) (string)
-    - Trademark status (if applicable) (string)
-    - Bot that scored the domain name (string)
-    - Datetime of creation (datetime)
-    - Datetime of last update (datetime)
-    - Domain availability status (e.g. available, reserved, sold, auction, premium) (string)
+#### Functionality 1.2: Make the filters dynamic
 
-    Please create a database schema for the database for the above requirements.
-    Use PostgreSQL with Prisma ORM.
-    Tech stack: NextJS 14, shadcn, Tailwind, Supabase, Lucide icons.
+Look at the schema in @schema.prisma 
+
+These tables:
+DomainName
+DNAvailabilityStatus
+DNEvaluation
+DNSEOAnalysis
+
+Fetch all the values of the above tables, along with their relation, and save it locally.
+
+The filters in the left Nav should take the values dynamically from the values present in the database items.
+"Status" values should be taken from  DNAvailabilityStatus
+TLDs should be values taken from DomainName -> tld attribute
+Bots should take values from DomainName -> agentModel
+Industries should take values dynamically from DNEvaluation -> possibleCategories
+
+
+
+
 
 #### Functionality 1.3: Dashboard page with views and actions
 The user views the information in the database through Dashboard page

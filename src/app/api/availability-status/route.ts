@@ -4,9 +4,19 @@ import { DNAvailabilityStatus } from '@prisma/client'
 
 export async function POST(request: Request) {
   try {
-    const body: Omit<DNAvailabilityStatus, 'id' | 'createdAt'> = await request.json()
+    const { domainName, ...bodyData } = await request.json()
+    const body: Omit<DNAvailabilityStatus, 'id' | 'createdAt' | 'domainName'> = bodyData
+
     const status = await prisma.dNAvailabilityStatus.create({
-      data: body,
+      data: {
+        ...body,
+        // domainName: {
+        //     connect: { domainName: domainName }
+        // },
+        relatedDomain: {
+          connect: { domainName: domainName }
+        }
+      }
     })
     return NextResponse.json(status)
   } catch (error) {

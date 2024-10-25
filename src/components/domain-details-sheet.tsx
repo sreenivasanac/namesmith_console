@@ -1,5 +1,6 @@
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from "@/components/ui/sheet"
 import { DomainWithDetails } from "@/types/domain"
+import { ScrollArea } from "@/components/ui/scroll-area"
 
 interface DomainDetailsProps {
   domain: DomainWithDetails
@@ -9,66 +10,72 @@ interface DomainDetailsProps {
 export function DomainDetailsSheet({ domain, onClose }: DomainDetailsProps) {
   return (
     <Sheet open={true} onOpenChange={onClose}>
-      <SheetContent>
-        <SheetHeader>
+      <SheetContent className="w-[400px] sm:w-[540px] p-0">
+        <SheetHeader className="p-6 pb-2">
           <SheetTitle>Domain Details</SheetTitle>
           <SheetDescription>
-            Detailed information about the domain {domain.domainName}
+            Detailed information about the domain
+            <br />
+            <span className="font-bold text-lg mt-2 block">
+              {domain.domainName}
+            </span>
           </SheetDescription>
         </SheetHeader>
-        <div className="mt-4 space-y-4">
-          <section>
-            <h3 className="text-lg font-semibold">Domain Information</h3>
-            <p>TLD: {domain.tld}</p>
-            <p>Length: {domain.length}</p>
-            <p>Created At: {domain.createdAt.toLocaleString()}</p>
-            <p>Processed By Agent: {domain.processedByAgent}</p>
-            <p>Agent Model: {domain.agentModel}</p>
-          </section>
-
-          {domain.availabilityStatus && (
+        <ScrollArea className="h-[calc(100vh-8rem)] px-6">
+          <div className="space-y-6 pb-6">
             <section>
-              <h3 className="text-lg font-semibold">Availability Status</h3>
-              <p>Status: {domain.availabilityStatus.status}</p>
-              <p>Processed By Agent: {domain.availabilityStatus.processedByAgent}</p>
-              <p>Agent Model: {domain.availabilityStatus.agentModel}</p>
-              <p>Created At: {domain.availabilityStatus.createdAt.toLocaleString()}</p>
+              <h3 className="text-lg font-semibold">Domain Information</h3>
+              <p>TLD: {domain.tld}</p>
+              <p>Length: {domain.length}</p>
+              <p>Created At: {domain.createdAt.toLocaleString()}</p>
+              <p>Processed By Agent: {domain.processedByAgent}</p>
+              <p>Agent Model: {domain.agentModel}</p>
             </section>
-          )}
 
-          {domain.evaluation && (
-            <section>
-              <h3 className="text-lg font-semibold">Evaluation</h3>
-              <p>Possible Categories: {domain.evaluation.possibleCategories.join(", ")}</p>
-              <p>Possible Keywords: {domain.evaluation.possibleKeywords.join(", ")}</p>
-              <p>Memorability Score: {domain.evaluation.memorabilityScore}</p>
-              <p>Pronounceability Score: {domain.evaluation.pronounceabilityScore}</p>
-              <p>Brandability Score: {domain.evaluation.brandabilityScore}</p>
-              <p>Overall Score: {domain.evaluation.overallScore}</p>
-              <p>Description: {domain.evaluation.description}</p>
-              <p>Processed By Agent: {domain.evaluation.processedByAgent}</p>
-              <p>Agent Model: {domain.evaluation.agentModel}</p>
-              <p>Created At: {domain.evaluation.createdAt.toLocaleString()}</p>
-            </section>
-          )}
+            {domain.availabilityStatus && (
+              <section>
+                <h3 className="text-lg font-semibold">Availability Status</h3>
+                <p>Status: {domain.availabilityStatus.status}</p>
+                <p>Processed By Agent: {domain.availabilityStatus.processedByAgent}</p>
+                <p>Agent Model: {domain.availabilityStatus.agentModel}</p>
+                <p>Created At: {domain.availabilityStatus.createdAt.toLocaleString()}</p>
+              </section>
+            )}
 
-          {domain.seoAnalysis && (
-            <section>
-              <h3 className="text-lg font-semibold">SEO Analysis</h3>
-              <p>SEO Keywords: {domain.seoAnalysis.seoKeywords.join(", ")}</p>
-              <p>SEO Keyword Relevance Score: {domain.seoAnalysis.seoKeywordRelevanceScore}</p>
-              <p>Industry Relevance Score: {domain.seoAnalysis.industryRelevanceScore}</p>
-              <p>Domain Age: {domain.seoAnalysis.domainAge}</p>
-              <p>Potential Resale Value: {domain.seoAnalysis.potentialResaleValue}</p>
-              <p>Language: {domain.seoAnalysis.language}</p>
-              <p>Trademark Status: {domain.seoAnalysis.trademarkStatus || "N/A"}</p>
-              <p>Scored By Agent: {domain.seoAnalysis.scoredByAgent}</p>
-              <p>Agent Model: {domain.seoAnalysis.agentModel}</p>
-              <p>Description: {domain.seoAnalysis.description}</p>
-              <p>Created At: {domain.seoAnalysis.createdAt.toLocaleString()}</p>
-            </section>
-          )}
-        </div>
+            {domain.evaluation && (
+              <section>
+                <h3 className="text-lg font-semibold">Evaluation</h3>
+                <p>Possible Categories: {domain.evaluation.possibleCategories.join(", ")}</p>
+                <p>Possible Keywords: {domain.evaluation.possibleKeywords.join(", ")}</p>
+                <p>Memorability Score: {domain.evaluation.memorabilityScore}</p>
+                <p>Pronounceability Score: {domain.evaluation.pronounceabilityScore}</p>
+                <p>Brandability Score: {domain.evaluation.brandabilityScore}</p>
+                <p>Overall Score: {domain.evaluation.overallScore}</p>
+                <p>Description: {domain.evaluation.description}</p>
+                <p>Processed By Agent: {domain.evaluation.processedByAgent}</p>
+                <p>Agent Model: {domain.evaluation.agentModel}</p>
+                <p>Created At: {domain.evaluation.createdAt.toLocaleString()}</p>
+              </section>
+            )}
+
+            {domain.seoAnalysis && (
+              <section>
+                <h3 className="text-lg font-semibold">SEO Analysis</h3>
+                <p>SEO Keywords: {domain.seoAnalysis.seoKeywords.join(", ")}</p>
+                <p>SEO Keyword Relevance Score: {domain.seoAnalysis.seoKeywordRelevanceScore}</p>
+                <p>Industry Relevance Score: {domain.seoAnalysis.industryRelevanceScore}</p>
+                <p>Domain Age: {domain.seoAnalysis.domainAge}</p>
+                <p>Potential Resale Value: {domain.seoAnalysis.potentialResaleValue}</p>
+                <p>Language: {domain.seoAnalysis.language}</p>
+                <p>Trademark Status: {domain.seoAnalysis.trademarkStatus || "N/A"}</p>
+                <p>Scored By Agent: {domain.seoAnalysis.scoredByAgent}</p>
+                <p>Agent Model: {domain.seoAnalysis.agentModel}</p>
+                <p>Description: {domain.seoAnalysis.description}</p>
+                <p>Created At: {domain.seoAnalysis.createdAt.toLocaleString()}</p>
+              </section>
+            )}
+          </div>
+        </ScrollArea>
       </SheetContent>
     </Sheet>
   )

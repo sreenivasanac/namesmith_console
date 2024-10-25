@@ -4,26 +4,23 @@ import { DNEvaluation } from '@prisma/client'
 
 export async function POST(request: Request) {
   try {
-    const body: Omit<DNEvaluation, 'id' | 'createdAt' | 'overallScore'> = await request.json()
+    const { domainName, ...bodyData } = await request.json()
+    const body: Omit<DNEvaluation, 'id' | 'createdAt' | 'overallScore' | 'domainName'> = bodyData
     
-    // Calculate overallScore
     const overallScore = Math.round(
       (body.memorabilityScore + body.pronounceabilityScore + body.brandabilityScore) / 3
     )
 
     const evaluation = await prisma.dNEvaluation.create({
       data: {
-        domainId: body.domainId,
-        possibleCategories: body.possibleCategories,
-        possibleKeywords: body.possibleKeywords,
-        memorabilityScore: body.memorabilityScore,
-        pronounceabilityScore: body.pronounceabilityScore,
-        brandabilityScore: body.brandabilityScore,
-        // Take overallScore from the calculation
-        overallScore: overallScore,
-        description: body.description,
-        processedByAgent: body.processedByAgent,
-        agentModel: body.agentModel
+        ...body,
+        overallScore,
+        // domainName: {
+        //     connect: { domainName: domainName }
+        // },
+        relatedDomain: {
+          connect: { domainName: domainName }
+        }
       }
     })
     return NextResponse.json(evaluation)

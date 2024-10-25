@@ -183,7 +183,7 @@ export function DomainTable({ domains }: DomainTableProps) {
                   <CaretSortIcon className="ml-2 h-4 w-4" />
                 </Button>
               </TableHead>
-              <TableHead>Domain name Availability Status</TableHead>
+              <TableHead>Availability Status</TableHead>
               <TableHead>Actions</TableHead>
             </TableRow>
           </TableHeader>
@@ -200,25 +200,13 @@ export function DomainTable({ domains }: DomainTableProps) {
                    domain.availabilityStatus?.status || 'N/A'}
                 </TableCell>
                 <TableCell>
-                  <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                      <Button variant="ghost" className="h-8 w-8 p-0">
-                        <span className="sr-only">Open menu</span>
-                        <DotsHorizontalIcon className="h-4 w-4" />
-                      </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end">
-                      <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                      <DropdownMenuItem onClick={() => navigator.clipboard.writeText(domain.domainName)}>
-                        Copy domain name
-                      </DropdownMenuItem>
-                      <DropdownMenuSeparator />
-                      <DropdownMenuItem onClick={() => setSelectedDomain(domain)}>
-                        View details
-                      </DropdownMenuItem>
-                      <DropdownMenuItem>Edit</DropdownMenuItem>
-                    </DropdownMenuContent>
-                  </DropdownMenu>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setSelectedDomain(domain)}
+                  >
+                    View Details
+                  </Button>
                 </TableCell>
               </TableRow>
             ))}

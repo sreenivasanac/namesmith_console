@@ -21,15 +21,15 @@ model DomainName {
   processedByAgent  String
   agentModel        String
 
-  evaluation         DNEvaluation?
-  seoAnalysis        DNSEOAnalysis?
-  availabilityStatus DNAvailabilityStatus?
+  evaluation         DNEvaluation? @relation("DomainEvaluation", fields: [domainName], references: [domainName])
+  seoAnalysis        DNSEOAnalysis? @relation("DomainSEOAnalysis", fields: [domainName], references: [domainName])
+  availabilityStatus DNAvailabilityStatus? @relation("DomainAvailabilityStatus", fields: [domainName], references: [domainName])
 }
 
 model DNAvailabilityStatus {
   id                String   @id @default(cuid())
-  domainId          String   @unique
-  domain            DomainName @relation(fields: [domainId], references: [id])
+  domainName        String   @unique
+  relatedDomain     DomainName @relation(fields: [domainName], references: [domainName])
   status            String
   processedByAgent  String
   agentModel        String
@@ -38,8 +38,8 @@ model DNAvailabilityStatus {
 
 model DNEvaluation {
   id                    String   @id @default(cuid())
-  domainId              String   @unique
-  domain                DomainName @relation(fields: [domainId], references: [id])
+  domainName            String   @unique
+  relatedDomain         DomainName @relation(fields: [domainName], references: [domainName])
   possibleCategories    String[]
   possibleKeywords      String[]
   memorabilityScore     Int
@@ -54,8 +54,8 @@ model DNEvaluation {
 
 model DNSEOAnalysis {
   id                       String   @id @default(cuid())
-  domainId                 String   @unique
-  domain                   DomainName @relation(fields: [domainId], references: [id])
+  domainName               String   @unique
+  relatedDomain            DomainName @relation(fields: [domainName], references: [domainName])
   seoKeywords              String[]
   seoKeywordRelevanceScore Int
   industryRelevanceScore   Int

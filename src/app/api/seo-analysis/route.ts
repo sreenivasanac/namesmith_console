@@ -4,9 +4,19 @@ import { DNSEOAnalysis } from '@prisma/client'
 
 export async function POST(request: Request) {
   try {
-    const body: Omit<DNSEOAnalysis, 'id' | 'createdAt'> = await request.json()
+    const { domainName, ...bodyData } = await request.json()
+    const body: Omit<DNSEOAnalysis, 'id' | 'createdAt' | 'domainName'> = bodyData
+
     const seoAnalysis = await prisma.dNSEOAnalysis.create({
-      data: body,
+      data: {
+        ...body,
+        // domainName: {
+        //     connect: { domainName: domainName }
+        // },
+        relatedDomain: {
+          connect: { domainName: domainName }
+        }
+      }
     })
     return NextResponse.json(seoAnalysis)
   } catch (error) {

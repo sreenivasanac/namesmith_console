@@ -9,7 +9,17 @@ def create_domain(domain_data):
     return response.json() if response.ok else None
 
 def create_availability_status(status_data):
-    response = requests.post(f"{BASE_URL}/availability-status", json=status_data)
+    formatted_data = {
+        "status": status_data["status"],
+        "processedByAgent": status_data["processedByAgent"],
+        "agentModel": status_data["agentModel"],
+        "relatedDomain": {
+            "connect": {
+                "domainName": status_data["domainName"]
+            }
+        }
+    }
+    response = requests.post(f"{BASE_URL}/availability-status", json=formatted_data)
     print_response_info(response)
     return response.json() if response.ok else None
 
@@ -32,7 +42,7 @@ def print_response_info(response):
 new_domain = {
     "domainName": "example3.com",
     "tld": "com",
-    "length": 11,
+    "length": 8,
     "processedByAgent": "Agent1",
     "agentModel": "Model1"
 }
@@ -40,10 +50,10 @@ created_domain = create_domain(new_domain)
 print("Created domain:", created_domain)
 
 if created_domain:
-    domain_id = created_domain['id']
+    domain_name = created_domain['domainName']
 
     new_availability_status = {
-        "domainId": domain_id,
+        "domainName": domain_name,
         "status": "Available",
         "processedByAgent": "bot-323",
         "agentModel": "ModelX"
@@ -52,7 +62,7 @@ if created_domain:
     print("Created availability status:", created_availability_status)
 
     new_evaluation = {
-        "domainId": domain_id,
+        "domainName": domain_name,
         "possibleCategories": ["tech", "business"],
         "possibleKeywords": ["innovation", "growth"],
         "memorabilityScore": 8,
@@ -67,7 +77,7 @@ if created_domain:
     print("Created evaluation:", created_evaluation)
 
     new_seo_analysis = {
-        "domainId": domain_id,
+        "domainName": domain_name,
         "seoKeywords": ["seo", "analysis"],
         "seoKeywordRelevanceScore": 8,
         "industryRelevanceScore": 7,
@@ -87,14 +97,14 @@ new_domains = [
     {
         "domainName": "example1.com",
         "tld": "com",
-        "length": 11,
+        "length": 8,
         "processedByAgent": "Agent1",
         "agentModel": "Model1"
     },
     {
         "domainName": "example2.com",
         "tld": "com",
-        "length": 11,
+        "length": 8,
         "processedByAgent": "Agent2",
         "agentModel": "Model2"
     }
@@ -105,19 +115,19 @@ for domain_data in new_domains:
     print(f"Created domain: {created_domain}")
 
     if created_domain:
-        domain_id = created_domain['id']
+        domain_name = created_domain['domainName']
 
         # Create related records for each domain
         availability_status = create_availability_status({
-            "domainId": domain_id,
+            "domainName": domain_name,
             "status": "Available",
             "processedByAgent": "bot-323",
             "agentModel": "ModelX"
         })
-        print(f"Created availability status for {domain_data['domainName']}: {availability_status}")
+        print(f"Created availability status for {domain_name}: {availability_status}")
 
         evaluation = create_evaluation({
-            "domainId": domain_id,
+            "domainName": domain_name,
             "possibleCategories": ["tech", "business"],
             "possibleKeywords": ["innovation", "growth"],
             "memorabilityScore": 8,
@@ -127,10 +137,10 @@ for domain_data in new_domains:
             "processedByAgent": "agent-001",
             "agentModel": "ModelX"
         })
-        print(f"Created evaluation for {domain_data['domainName']}: {evaluation}")
+        print(f"Created evaluation for {domain_name}: {evaluation}")
 
         seo_analysis = create_seo_analysis({
-            "domainId": domain_id,
+            "domainName": domain_name,
             "seoKeywords": ["seo", "analysis"],
             "seoKeywordRelevanceScore": 8,
             "industryRelevanceScore": 7,
@@ -142,4 +152,4 @@ for domain_data in new_domains:
             "agentModel": "ModelX",
             "description": "SEO analysis description"
         })
-        print(f"Created SEO analysis for {domain_data['domainName']}: {seo_analysis}")
+        print(f"Created SEO analysis for {domain_name}: {seo_analysis}")

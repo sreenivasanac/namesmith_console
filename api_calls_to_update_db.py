@@ -9,17 +9,7 @@ def create_domain(domain_data):
     return response.json() if response.ok else None
 
 def create_availability_status(status_data):
-    formatted_data = {
-        "status": status_data["status"],
-        "processedByAgent": status_data["processedByAgent"],
-        "agentModel": status_data["agentModel"],
-        "relatedDomain": {
-            "connect": {
-                "domainName": status_data["domainName"]
-            }
-        }
-    }
-    response = requests.post(f"{BASE_URL}/availability-status", json=formatted_data)
+    response = requests.post(f"{BASE_URL}/availability-status", json=status_data)
     print_response_info(response)
     return response.json() if response.ok else None
 
@@ -50,10 +40,10 @@ created_domain = create_domain(new_domain)
 print("Created domain:", created_domain)
 
 if created_domain:
-    domain_name = created_domain['domainName']
+    domain_id = created_domain['id']
 
     new_availability_status = {
-        "domainName": domain_name,
+        "domainId": domain_id,
         "status": "Available",
         "processedByAgent": "bot-323",
         "agentModel": "ModelX"
@@ -62,7 +52,7 @@ if created_domain:
     print("Created availability status:", created_availability_status)
 
     new_evaluation = {
-        "domainName": domain_name,
+        "domainId": domain_id,
         "possibleCategories": ["tech", "business"],
         "possibleKeywords": ["innovation", "growth"],
         "memorabilityScore": 8,
@@ -77,7 +67,7 @@ if created_domain:
     print("Created evaluation:", created_evaluation)
 
     new_seo_analysis = {
-        "domainName": domain_name,
+        "domainId": domain_id,
         "seoKeywords": ["seo", "analysis"],
         "seoKeywordRelevanceScore": 8,
         "industryRelevanceScore": 7,
@@ -115,11 +105,12 @@ for domain_data in new_domains:
     print(f"Created domain: {created_domain}")
 
     if created_domain:
-        domain_name = created_domain['domainName']
+        domain_name = domain_data['domainName']
+        domain_id = created_domain['id']
 
         # Create related records for each domain
         availability_status = create_availability_status({
-            "domainName": domain_name,
+            "domainId": domain_id,
             "status": "Available",
             "processedByAgent": "bot-323",
             "agentModel": "ModelX"
@@ -127,7 +118,7 @@ for domain_data in new_domains:
         print(f"Created availability status for {domain_name}: {availability_status}")
 
         evaluation = create_evaluation({
-            "domainName": domain_name,
+            "domainId": domain_id,
             "possibleCategories": ["tech", "business"],
             "possibleKeywords": ["innovation", "growth"],
             "memorabilityScore": 8,
@@ -140,7 +131,7 @@ for domain_data in new_domains:
         print(f"Created evaluation for {domain_name}: {evaluation}")
 
         seo_analysis = create_seo_analysis({
-            "domainName": domain_name,
+            "domainId": domain_id,
             "seoKeywords": ["seo", "analysis"],
             "seoKeywordRelevanceScore": 8,
             "industryRelevanceScore": 7,

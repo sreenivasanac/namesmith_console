@@ -21,25 +21,25 @@ model DomainName {
   processedByAgent  String
   agentModel        String
 
-  evaluation         DNEvaluation? @relation("DomainEvaluation", fields: [domainName], references: [domainName])
-  seoAnalysis        DNSEOAnalysis? @relation("DomainSEOAnalysis", fields: [domainName], references: [domainName])
-  availabilityStatus DNAvailabilityStatus? @relation("DomainAvailabilityStatus", fields: [domainName], references: [domainName])
+  evaluation         DNEvaluation?
+  seoAnalysis        DNSEOAnalysis?
+  availabilityStatus DNAvailabilityStatus?
 }
 
 model DNAvailabilityStatus {
   id                String   @id @default(cuid())
-  domainName        String   @unique
-  relatedDomain     DomainName @relation(fields: [domainName], references: [domainName])
+  domainId          String   @unique
+  relatedDomain     DomainName @relation(fields: [domainId], references: [id])
   status            String
   processedByAgent  String
   agentModel        String
-  createdAt         DateTime @default(now())
+  createdAt         DateTime   @default(now())
 }
 
 model DNEvaluation {
   id                    String   @id @default(cuid())
-  domainName            String   @unique
-  relatedDomain         DomainName @relation(fields: [domainName], references: [domainName])
+  domainId              String   @unique
+  relatedDomain         DomainName @relation(fields: [domainId], references: [id])
   possibleCategories    String[]
   possibleKeywords      String[]
   memorabilityScore     Int
@@ -49,13 +49,13 @@ model DNEvaluation {
   overallScore          Int
   processedByAgent      String
   agentModel            String
-  createdAt             DateTime @default(now())
+  createdAt             DateTime   @default(now())
 }
 
 model DNSEOAnalysis {
   id                       String   @id @default(cuid())
-  domainName               String   @unique
-  relatedDomain            DomainName @relation(fields: [domainName], references: [domainName])
+  domainId                 String   @unique
+  relatedDomain            DomainName @relation(fields: [domainId], references: [id])
   seoKeywords              String[]
   seoKeywordRelevanceScore Int
   industryRelevanceScore   Int
@@ -66,7 +66,7 @@ model DNSEOAnalysis {
   scoredByAgent            String
   agentModel               String
   description              String
-  createdAt                DateTime @default(now())
+  createdAt                DateTime   @default(now())
 }
 
 enum QueryMode {

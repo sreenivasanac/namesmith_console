@@ -4,7 +4,7 @@ import { DNEvaluation } from '@prisma/client'
 
 export async function POST(request: Request) {
   try {
-    const { domainName, ...bodyData } = await request.json()
+    const { domainName, domainId, ...bodyData } = await request.json()
     const body: Omit<DNEvaluation, 'id' | 'createdAt' | 'overallScore' | 'domainName'> = bodyData
     
     const overallScore = Math.round(
@@ -15,12 +15,13 @@ export async function POST(request: Request) {
       data: {
         ...body,
         overallScore,
+        domainId: domainId,
         // domainName: {
         //     connect: { domainName: domainName }
         // },
-        relatedDomain: {
-          connect: { domainName: domainName }
-        }
+        // relatedDomain: {
+        //   connect: { domainName: domainName }
+        // }
       }
     })
     return NextResponse.json(evaluation)

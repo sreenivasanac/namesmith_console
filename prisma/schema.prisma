@@ -13,34 +13,33 @@ datasource db {
 }
 
 model DomainName {
-  id            String   @id @default(cuid())
-  domainName    String   @unique
-  createdAt     DateTime @default(now())
-  tld           String
-  length        Int
+  id                String   @id @default(cuid())
+  domainName        String   @unique
+  createdAt         DateTime @default(now())
+  tld               String
+  length            Int
   processedByAgent  String
   agentModel        String
 
-  // Add the relation field here
-  evaluation DNEvaluation? 
-  seoAnalysis DNSEOAnalysis?
+  evaluation         DNEvaluation?
+  seoAnalysis        DNSEOAnalysis?
   availabilityStatus DNAvailabilityStatus?
 }
 
 model DNAvailabilityStatus {
-  id                String @id @default(cuid())
-  domainId          String @unique
-  domainName  DomainName   @relation(fields: [domainId], references: [id])
+  id                String   @id @default(cuid())
+  domainId          String   @unique
+  domain            DomainName @relation(fields: [domainId], references: [id])
   status            String
-  processedByAgent    String
+  processedByAgent  String
   agentModel        String
-  createdAt       DateTime @default(now())
+  createdAt         DateTime @default(now())
 }
 
 model DNEvaluation {
-  id String @id @default(cuid())
-  domainId String @unique
-  domainName     DomainName   @relation(fields: [domainId], references: [id])
+  id                    String   @id @default(cuid())
+  domainId              String   @unique
+  domain                DomainName @relation(fields: [domainId], references: [id])
   possibleCategories    String[]
   possibleKeywords      String[]
   memorabilityScore     Int
@@ -48,15 +47,15 @@ model DNEvaluation {
   brandabilityScore     Int
   description           String
   overallScore          Int
-  processedByAgent        String
-  agentModel             String
+  processedByAgent      String
+  agentModel            String
   createdAt             DateTime @default(now())
 }
 
 model DNSEOAnalysis {
   id                       String   @id @default(cuid())
   domainId                 String   @unique
-  domainName     DomainName   @relation(fields: [domainId], references: [id])
+  domain                   DomainName @relation(fields: [domainId], references: [id])
   seoKeywords              String[]
   seoKeywordRelevanceScore Int
   industryRelevanceScore   Int

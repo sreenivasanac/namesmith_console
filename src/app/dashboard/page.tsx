@@ -22,7 +22,7 @@ export default async function DashboardPage({
 
   return (
     <div className="container mx-auto py-10">
-      <h1 className="text-3xl font-bold mb-6">Domain Dashboard</h1>
+      <h1 className="text-3xl font-bold mb-6">Namesmith Domain Names Dashboard</h1>
       <div className="flex">
         <div className="w-1/4 pr-4">
           <Filters />

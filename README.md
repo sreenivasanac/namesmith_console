@@ -1,28 +1,56 @@
 # Domain Name Investment Platform
 
 This project is a multi-agent bot system using LangGraph to automate the generation, evaluation, and resale of high-quality, brandable domain names. The system includes a dashboard to view the output of the bots and their status.
-[Project Documentation](https://coda.io/d/
-Domain-name-Bot-Agents-project_dfkJDNYF-UH]
+[Project Documentation](https://coda.io/d/Domain-name-Bot-Agents-project_dfkJDNYF-UH)
+
+Codebase for the agentic bot system is in the [namesmith-agents](https://github.com/sreenivasanac/namesmith_agents) github repo.
+
+**Live Demo**: [Namesmith Console Dashboard](https://namesmith-console-qjzx.vercel.app/dashboard)
 
 ## Features
 
-- View a list of domains with basic information
-- Filter domains by status, TLD, bot, and industry
-- Search domains by name
-- Pagination for large datasets
-- Detailed view for individual domains (TODO)
-- Actions such as edit, delete, buy, and resell (TODO)
+- View and manage domain names with comprehensive details:
+  - Basic domain information (name, TLD, length)
+  - Availability status tracking
+  - Domain evaluation metrics (memorability, pronounceability, brandability)
+  - SEO analysis with keyword relevance and industry metrics
+- Advanced filtering capabilities:
+  - Filter by status, TLD, bot, and industry
+  - Range-based filters for evaluation scores
+  - Full-text domain name search
+- Detailed domain information sheets with:
+  - Evaluation metrics and scores
+  - SEO analysis data
+  - Availability status
+  - Agent processing details
+- Pagination for efficient data handling
+- API endpoints for bot integration
 
 ## Tech Stack
 
-- Next.js 14
-- React
-- TypeScript
-- Tailwind CSS
-- shadcn/ui components
-- Prisma ORM
-- PostgreSQL (via Supabase)
-- Zustand for state management
+- **Framework**: Next.js 14 with App Router
+- **Language**: TypeScript
+- **Database**: 
+  - PostgreSQL via Supabase
+  - Prisma ORM for database management
+- **UI Components**: 
+  - shadcn/ui
+  - Tailwind CSS
+  - Lucide icons
+- **State Management**: Server components with minimal client state
+
+## API Endpoints
+
+- `/api/domains` - Domain management
+- `/api/availability-status` - Status tracking
+- `/api/evaluation` - Domain evaluation
+- `/api/seo-analysis` - SEO analysis
+- `/api/filters` - Filter options
+
+## Dashboard screenshot
+![Dashboard Screenshot](./images/dashboard.png)
+
+
 
 ## Getting Started
 
@@ -30,7 +58,7 @@ Domain-name-Bot-Agents-project_dfkJDNYF-UH]
 
 - Node.js (v18 or later)
 - npm or yarn
-- PostgreSQL database (We use Supabase)
+- PostgreSQL database (Supabase)
 
 ### Installation
 
@@ -45,8 +73,8 @@ Domain-name-Bot-Agents-project_dfkJDNYF-UH]
    npm install
    ```
 
-3. Set up your environment variables:
-   Create a `.env` file in the root directory and add your Supabase connection strings:
+3. Set up environment variables:
+   Create a `.env` file with:
    ```
    DATABASE_URL="your_database_url_here"
    DIRECT_URL="your_direct_url_here"
@@ -54,34 +82,51 @@ Domain-name-Bot-Agents-project_dfkJDNYF-UH]
    NEXT_PUBLIC_SUPABASE_ANON_KEY="your_anon_key_here"
    NEXT_PUBLIC_BASE_URL=http://localhost:3000
    ```
-   You can get the `.env` file from the project owner.
 
-4. Run Prisma migrations:
+4. Initialize the database:
    ```
+   npx prisma generate
    npx prisma migrate dev
+   npx prisma db seed
    ```
 
-5. Run the development server:
+5. Start the development server:
    ```
    npm run dev
    ```
 
-6. Open [http://localhost:3000](http://localhost:3000) in your browser to see the application.
+## Database Schema
 
-## Database Management
+- **DomainName**: Core domain information
+- **DNAvailabilityStatus**: Domain availability tracking
+- **DNEvaluation**: Comprehensive domain evaluation metrics
+- **DNSEOAnalysis**: SEO and market analysis data
 
-- To create new Prisma migrations after schema changes:
-  ```
-  npx prisma migrate dev --name <migration-name>
-  ```
+## Development Guidelines
 
-## TODO
+- Follow TypeScript best practices
+- Use server components by default
+- Handle errors with proper logging
+- Implement early returns for error conditions
+- Use proper type definitions from `@/types/domain`
 
-1. Implement detailed view for individual domains
-2. Add edit, delete, buy, and resell actions
-3. Implement sorting functionality for the domain table
-4. Create an API for agents to connect and update the database with new domains
-5. Improve error handling and add more comprehensive logging
-6. Implement user authentication and authorization
-7. Add unit and integration tests
-8. Optimize performance for large datasets
+## Scripts
+
+- `npm run dev` - Development server
+- `npm run build` - Production build
+- `npm run start` - Start production server
+- `npx prisma studio` - Database management UI
+- `npx prisma migrate dev` - Run migrations
+- `npx prisma db seed` - Seed database
+
+## Contributing
+
+1. Fork the repository
+2. Create your feature branch
+3. Commit your changes
+4. Push to the branch
+5. Create a Pull Request
+
+## License
+
+[Add License Information]

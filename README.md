@@ -7,6 +7,9 @@ Codebase for the agentic bot system is in the [namesmith-agents](https://github.
 
 **Live Demo**: [Namesmith Console Dashboard](https://namesmith-console-qjzx.vercel.app/dashboard)
 
+- [Project Demo of Agents in action -- Youtube](https://www.youtube.com/watch?v=hF3eGLudxY4&list=PLB1nTQo4_y6u_4vzapND6Bm6J7M1KVurF&index=7)
+
+
 ## Features
 
 - View and manage domain names with comprehensive details:
